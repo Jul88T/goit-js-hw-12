@@ -16,6 +16,7 @@ document.addEventListener('DOMContentLoaded', () => {
   let searchQuery = '';
   let totalHits = 0;
   let loadedImages = 0;
+  let gallery = null;
 
   function toggleLoader(isLoading) {
     if (isLoading) {
@@ -44,14 +45,14 @@ document.addEventListener('DOMContentLoaded', () => {
     toggleLoader(true);
 
     try {
-      const data = await fetchPhotosByQuery(searchQuery, currentPage);
+      const data = await fetchPhotosByQuery(searchQuery, currentPage, 15);
       totalHits = data.total;
       loadedImages += data.hits.length;
 
       if (data.total === 0) {
         iziToast.error({
           message:
-            '"Sorry, there are no images matching your search query. Please try again!"',
+            'Sorry, there are no images matching your search query. Please try again!',
           position: 'topRight',
         });
         toggleLoader(false);
@@ -64,17 +65,23 @@ document.addEventListener('DOMContentLoaded', () => {
 
       if (loadedImages >= totalHits) {
         loadMoreButton.classList.add('is-hidden');
-        endMessage.classList.remove('is-hidden');
+        iziToast.info({
+          message: "We're sorry, but you've reached the end of search results.",
+          position: 'topRight',
+          timeout: 3000,
+        });
       } else {
         loadMoreButton.classList.remove('is-hidden');
-        endMessage.classList.add('is-hidden');
       }
 
-      const gallery = new SimpleLightbox('.js-gallery a', {
-        captionDelay: 300,
-        captionsData: 'alt',
-      });
-      gallery.refresh();
+      if (!gallery) {
+        gallery = new SimpleLightbox('.js-gallery a', {
+          captionDelay: 300,
+          captionsData: 'alt',
+        });
+      } else {
+        gallery.refresh();
+      }
 
       window.scrollBy({
         top: window.innerHeight / 2,
@@ -95,7 +102,7 @@ document.addEventListener('DOMContentLoaded', () => {
     toggleLoader(true);
 
     try {
-      const data = await fetchPhotosByQuery(searchQuery, currentPage);
+      const data = await fetchPhotosByQuery(searchQuery, currentPage, 15);
       loadedImages += data.hits.length;
 
       const galleryTemplate = data.hits.map(createGalleryCardTemplate).join('');
@@ -104,13 +111,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
       if (loadedImages >= totalHits) {
         loadMoreButton.classList.add('is-hidden');
-        endMessage.classList.remove('is-hidden');
+        iziToast.info({
+          message: "We're sorry, but you've reached the end of search results.",
+          position: 'topRight',
+          timeout: 3000,
+        });
       }
 
-      const gallery = new SimpleLightbox('.js-gallery a', {
-        captionDelay: 300,
-        captionsData: 'alt',
-      });
       gallery.refresh();
 
       window.scrollBy({
