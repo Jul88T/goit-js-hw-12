@@ -1,7 +1,10 @@
 import axios from 'axios';
 
-export const fetchPhotosByQuery = async (searchQuery, currentPage) => {
-  const perPage = 20;
+export const fetchPhotosByQuery = async (
+  searchQuery,
+  currentPage,
+  perPage = 15
+) => {
   try {
     const response = await axios.get('https://pixabay.com/api/', {
       params: {
