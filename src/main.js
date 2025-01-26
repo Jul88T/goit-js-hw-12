@@ -49,13 +49,14 @@ document.addEventListener('DOMContentLoaded', () => {
       totalHits = data.total;
       loadedImages += data.hits.length;
 
-      if (data.total === 0) {
+      if (data.hits.length === 0) {
         iziToast.error({
           message:
             'Sorry, there are no images matching your search query. Please try again!',
           position: 'topRight',
         });
         toggleLoader(false);
+        loadMoreButton.classList.add('is-hidden');
         return;
       }
 
@@ -82,11 +83,6 @@ document.addEventListener('DOMContentLoaded', () => {
       } else {
         gallery.refresh();
       }
-
-      window.scrollBy({
-        top: window.innerHeight / 2,
-        behavior: 'smooth',
-      });
     } catch (err) {
       console.log(err);
       toggleLoader(false);
